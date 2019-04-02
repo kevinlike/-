@@ -1,0 +1,61 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+class SeqList
+{
+private:
+   int * data;
+   int last; // index of the last element
+public:
+   SeqList ( int sz );
+   ~SeqList ( ) { delete [ ] data; }
+   void input ();
+   void output() ;
+   void Insert   ( const int &x, int i);
+}  ;
+SeqList::SeqList ( int sz )
+{
+   if ( sz > 0 )
+   { data = new int[sz];
+     last = -1;
+   }
+}
+void SeqList:: input()
+{
+  cin >>last;
+  for (int i=0;i<last;i++)
+    cin>>data [i];
+  last--;
+}
+void SeqList:: output()
+{
+    int i=0;
+    for(i=0;i<last+1;i++)
+    {
+        cout<<data[i]<<' ';
+    }
+    cout<<endl;
+}
+void SeqList:: Insert(const int &x, int i)
+{
+    int j=0;
+    for(j=last;j>=i;j--)
+    {
+        data[j+1]=data[j];
+    }
+    data[i]=x;
+    last++;
+}
+
+ int main()
+ {
+  SeqList myList(50);
+  myList.input();
+  myList.output();
+  int where,value;
+  cin >>where;
+  cin >>value;
+  myList.Insert(value,where);
+  myList.output ();
+  return 1;
+ }
