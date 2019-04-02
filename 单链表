@@ -1,0 +1,105 @@
+#include "stdlib.h"
+#include "iostream"
+using namespace std ;
+
+class List; //前视定义,否则友元无法定义
+class LinkNode
+{
+    friend  List; //链表结点类的定义
+private:
+    LinkNode *link;
+    int data;
+public:
+    LinkNode(const int & item, LinkNode *ptr = NULL)
+    {
+        data=item;
+        link=ptr;
+    }
+    LinkNode (LinkNode *ptr = NULL)
+    {
+        link=ptr;
+    }
+    ~LinkNode() {};
+
+};
+
+class List
+{
+    //单链表类的定义
+private:
+    LinkNode *first; //指向首结点的指针
+public:
+    List ()
+    {
+        first = new LinkNode ();   // 带头结点
+    }
+    ~List ()
+    {
+        MakeEmpty();   //析构函数
+    }
+    void MakeEmpty ( );      //链表置空
+    void Remove ( int i );
+    void input(int  endTag);
+    void output();
+};
+void List:: MakeEmpty ( )
+{
+    LinkNode *q;
+    while (  first->link != NULL )
+    {
+        q = first->link;
+        first->link = q->link;
+        delete q;
+    }
+};
+
+void List :: input (int endTag)
+{
+    LinkNode  *newnode;
+    int val;
+    cin>>val;
+    while(val!=endTag)
+    {
+        newnode=new LinkNode (val);
+        newnode->link=first->link;
+        first->link=newnode;
+        cin>>val;
+    }
+}
+void List ::output()
+{
+    LinkNode *currentNode;
+    currentNode=first->link;
+    while(currentNode!=NULL)
+    {
+        cout<<currentNode->data<<' ';
+        currentNode=currentNode->link;
+    }
+    cout<<endl;
+}
+void List ::Remove(int index)
+{
+    LinkNode *currentNode;
+    currentNode=first;
+    int k=0;
+    while(currentNode!=NULL&&k<index)
+    {
+        currentNode=currentNode->link;
+        k++;
+    }
+    LinkNode *del=currentNode->link;
+    currentNode->link=del->link;
+    delete del;
+}
+
+int main()
+{
+    List l;
+    l.input(0); //0为输入的结束数字
+    l.output ();
+    int index;
+    cin>>index; //要删除的元素的下标，下标从0 开始
+    l.Remove(index);
+    l.output (); //删除后输出
+    return 0;
+}
