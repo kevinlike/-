@@ -1,0 +1,263 @@
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+#include<string>
+using namespace std;   //顺序线性表
+class SeqList
+{
+private:
+   int * data;
+   int maxSize;
+   int last; // index of the last element
+public:
+
+    SeqList ( int sz=50 );//初始化线性表
+    ~SeqList ( ) { delete [ ] data; }
+    void input ();//第一次赋值
+    void output() ;//依次输出所有值
+   int Length()
+   {
+       int k=last+1;
+       return k;
+   }
+   int getNum(int i)//取第i位数
+   {
+       int k=data[i];
+       return k;
+   }
+
+   bool getData(int i,int &x)const
+   {
+       if(i>=0&&i<=last)
+       {
+           x=data[i];
+           return true;
+       }
+       else
+       {
+           return false;
+       }
+   }
+   void Exchange(int i,int x)
+   {
+       data[i]=x;
+   }
+   void Insert   ( const int &x, int i);//在第i个位置插入x，所有值后移一位
+   void Insert   ();//无参数插入
+   void Setnum(int i);//向表尾加入一个数
+   void Delete();//删除指定值
+   void Locate();//定位
+}  ;
+SeqList::SeqList ( int sz )
+{
+   if ( sz > 0 )
+   {
+       last = -1;
+       maxSize=sz;
+       data=new int[maxSize];
+       if(data==NULL)
+       {
+           cerr<<"存储分配错误！"<<endl;
+           exit(1);
+       }
+   }
+}
+
+void SeqList:: input()//只能在创建时调用一次
+{
+  cin >>last;      //输入元素最后的位置
+  for (int i=0;i<last;i++)
+    cin>>data [i];
+  last--;//last=last-1,从0开始最后的位置
+}
+void SeqList:: output()
+{
+    int i=0;
+    for(i=0;i<last+1;i++)
+    {
+        cout<<' '<<data[i];
+    }
+    cout<<endl;
+}
+void SeqList:: Insert(const int &x, int i)
+{
+    int j=0;
+    for(j=last;j>=i;j--)
+    {
+        data[j+1]=data[j];
+    }
+    data[i]=x;
+    last++;
+}
+void SeqList:: Insert()
+{
+    int x,i;
+    cin>>i;
+    cin>>x;
+    i--;
+    int j=0;
+    for(j=last;j>=i;j--)
+    {
+        data[j+1]=data[j];
+    }
+    data[i]=x;
+    last++;
+}
+void SeqList:: Setnum(int i)
+{
+    data[last+1]=i;
+    last++;
+}
+void un(SeqList & A,SeqList & B)
+{
+       int n=A.Length(),m=B.Length(),i,x;
+       for(i=0;i<m;i++)
+       {
+           B.getData(i,x);
+           A.Insert(x,n);
+           n++;
+       }
+   }
+void sor(SeqList & L)
+{
+    int i, j, tmp, ma,k=L.Length();
+    for(i=0;i<k-1;i++)
+    {
+        ma = i;
+        for(j = i; j < k; j++)
+        {
+            if(L.getNum(ma) > L.getNum(j))
+                ma = j;
+        }
+        tmp = L.getNum(i);
+        L.Exchange(i,L.getNum(ma));
+        L.Exchange(ma,tmp);
+    }
+
+}
+void SeqList:: Delete()
+{
+    int x,i=0;
+    cin>>x;
+    for(i=0;i<last+1;i++)
+    {
+        if(data[i]==x)
+        {
+            int j=i;
+            for(j=i;j<last;j++)
+            {
+                data[j]=data[j+1];
+            }
+            last--;
+            i--;
+        }
+    }
+}
+void SeqList:: Locate()
+{
+    int x;
+    cin>>x;
+    int i=0,flag=0;
+    for(i=0;i<last+1;i++)
+    {
+        if(data[i]==x)
+        {
+            flag=1;
+            break;
+        }
+    }
+    if(flag==1)
+    {
+        cout<<x<<" is located at index of "<<i+1<<endl;
+    }
+    else
+    {
+        cout<<x<<" is not found"<<endl;
+    }
+}
+void uni(SeqList & A,SeqList & B,SeqList & C)
+{
+       int n=A.Length(),m=B.Length(),i,x;
+       for(i=0;i<n;i++)
+       {
+           A.getData(i,x);
+           C.Setnum(x);
+
+       }
+       for(i=0;i<m;i++)
+       {
+           int j=0;
+           B.getData(i,x);
+           int tmp;
+
+           for(j=0;j<n;j++)
+           {
+               A.getData(j,tmp);
+               if(x==tmp)
+               {
+                   break;
+               }
+           }
+           if(j==n)
+           {
+               C.Setnum(x);
+           }
+
+       }
+   }
+   void cro(SeqList & A,SeqList & B,SeqList & D)
+{
+       int n=A.Length(),m=B.Length(),i,x;
+       for(i=0;i<m;i++)
+       {
+           int j=0;
+           B.getData(i,x);
+           int tmp;
+
+           for(j=0;j<n;j++)
+           {
+               A.getData(j,tmp);
+               if(x==tmp)
+               {
+                   D.Setnum(x);
+                   break;
+               }
+           }
+
+       }
+   }
+ int main()
+ {
+  SeqList aList(50);
+  aList.input();
+  cout<<"A is created as:";
+  aList.output();
+  aList.Insert();
+  cout<<"After inserted A is";
+  aList.output();
+  aList.Delete();
+  cout<<"After deleted A is";
+  aList.output();
+
+  aList.Locate();
+  aList.Locate();
+
+  SeqList bList(50);
+  bList.input();
+  cout<<"B is created as:";
+  bList.output();
+  SeqList cList(50);
+  cro(aList,bList,cList);
+  cout<<"A cross B is";
+  cList.output();
+  SeqList dList(50);
+  uni(aList,bList,dList);
+  cout<<"A union B is";
+  dList.output();
+  sor(dList);
+  cout<<"A union B in sequence is";
+  dList.output();
+
+
+  return 1;
+ }
