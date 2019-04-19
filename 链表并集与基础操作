@@ -1,0 +1,264 @@
+#include "stdlib.h"
+#include "iostream"
+using namespace std ;//链表
+
+class List; //前视定义,否则友元无法定义
+class LinkNode
+{
+    friend  List; //链表结点类的定义
+private:
+
+public:
+    LinkNode *link;//节点的下一个地址
+    int data;//节点的数据
+    LinkNode(const int & item, LinkNode *ptr = NULL)//初始化一个节点，item是数据，ptr是指针指向的下一个地址，默认是最后一个所以是空
+    {
+        data=item;
+        link=ptr;
+    }
+    LinkNode (LinkNode *ptr = NULL)
+    {
+        link=ptr;
+    }
+    ~LinkNode() {};
+
+};
+
+class List
+{
+    //单链表类的定义
+private:
+
+public:
+    LinkNode *first; //指向首结点的指针
+    List ()
+    {
+        first = new LinkNode ();   // 带头结点，初始化时使用（一个对象仅使用一次）
+    }
+    ~List ()
+    {
+        MakeEmpty();   //析构函数
+    }
+    void MakeEmpty ( );      //链表置空
+    void Remove ( int i );
+    void input(int  endTag);//输入结束标志，读到结束标志前一直增加链表
+    void input();//无参数输入
+    void inser(int val);//插入一个新值
+    void change(int val,int num);//在第num(从0开始)位置换入val值
+    void output();
+    void sor();//链表排序
+    int length();//链表长度
+    int getdata(int num);//得到下标为num的值
+};
+void List:: MakeEmpty ( )
+{
+    LinkNode *q;
+    while (  first->link != NULL )
+    {
+        q = first->link;
+        first->link = q->link;
+        delete q;
+    }
+};
+
+void List :: input (int endTag)
+{
+    LinkNode  *newnode;
+    int val;
+    cin>>val;
+    while(val!=endTag)
+    {
+        newnode=new LinkNode (val);
+        newnode->link=first->link;//从头部（first）插入
+        first->link=newnode;
+        cin>>val;
+    }
+}
+void List :: input ()
+{
+    LinkNode  *newnode;
+    int num;
+    int val;
+    int i=0;
+    cin>>num;
+    while(i<num)
+    {
+        cin>>val;
+        newnode=new LinkNode (val);
+        newnode->link=first->link;//从头部（first）插入
+        first->link=newnode;
+        i++;
+    }
+}
+void List :: inser (int val)
+{
+    LinkNode  *newnode;
+    newnode=new LinkNode (val);
+    newnode->link=first->link;//从头部（first）插入
+    first->link=newnode;
+
+}
+void List :: change (int val,int num)
+{
+    LinkNode  *newnode;
+    newnode=first->link;
+    int i=0;
+    int len=length();
+    for(i=0;i<len;i++)
+    {
+        if(num==0)
+        {
+            newnode->data=val;
+            break;
+        }
+        else
+        {
+            if(i==num)
+            {
+                newnode->data=val;
+                break;
+            }
+            newnode=newnode->link;
+        }
+    }
+}
+void List ::output()
+{
+    LinkNode *currentNode;
+    currentNode=first->link;
+    while(currentNode!=NULL)
+    {
+        cout<<currentNode->data<<endl;
+        currentNode=currentNode->link;
+    }
+    cout<<endl;
+}
+void List ::Remove(int index)
+{
+    LinkNode *currentNode;
+    currentNode=first;
+    int k=0;
+    while(currentNode!=NULL&&k<index)
+    {
+        currentNode=currentNode->link;
+        k++;
+    }
+    LinkNode *del=currentNode->link;
+    currentNode->link=del->link;
+    delete del;
+}
+void List::sor()
+{
+    int len=0,i=0;
+    len=length();
+    int tmp[len+1];
+    LinkNode *currentNode;
+    currentNode=first;
+    for(i=0;i<len;i++)
+    {
+        currentNode=currentNode->link;
+        tmp[i]=currentNode->data;
+    }
+    for(i=0;i<len-1;i++)
+    {
+        int j=0;
+        for(j=0;j<len-i-1;j++)
+        {
+            if(tmp[j]>tmp[j+1])
+            {
+                int temp=tmp[j];
+                tmp[j]=tmp[j+1];
+                tmp[j+1]=temp;
+            }
+        }
+    }
+    currentNode=first;
+    for(i=0;i<len;i++)
+    {
+        currentNode=currentNode->link;
+        currentNode->data=tmp[i];
+    }
+}
+int List::length()
+{
+    LinkNode *currentNode;
+    currentNode=first;
+    int k=0;
+    while(currentNode!=NULL)
+    {
+        currentNode=currentNode->link;
+        k++;
+    }
+    k--;
+    return k;
+}
+int List ::getdata(int num)
+{
+    LinkNode *currentNode;
+    currentNode=first->link;
+    int i=0;
+    int len=length();
+    for(i=0;i<len;i++)
+    {
+        if(i==num)
+        {
+            int tmp;
+            tmp=currentNode->data;
+            return tmp;
+            break;
+        }
+        currentNode=currentNode->link;
+    }
+}
+void uni(List &A,List &B,List &C)
+{
+    int lena=A.length(),lenb=B.length();
+    int tmp[lena+lenb+1];
+    int i=0;
+    LinkNode *newNode;
+    newNode=A.first;
+    for(i=0;i<lena;i++)
+    {
+        newNode=newNode->link;
+        tmp[i]=newNode->data;
+    }
+    newNode=B.first;
+    for(i=lena;i<lena+lenb;i++)
+    {
+        newNode=newNode->link;
+        tmp[i]=newNode->data;
+    }
+    newNode=C.first;
+    for(i=0;i<lena+lenb;i++)
+    {
+        if(i==0)
+        {
+            C.inser(tmp[i]);
+        }
+        else
+        {
+            int j=0;
+            for(j=0;j<i;j++)
+            {
+                if(tmp[j]==tmp[i])
+                    break;
+            }
+            if(j==i)
+            {
+                C.inser(tmp[i]);
+            }
+        }
+    }
+}
+int main()
+{
+    List A;
+    List B;
+    List C;
+    A.input();
+    B.input(); 
+    uni(A,B,C);
+    C.sor();
+    C.output ();
+    return 0;
+}
