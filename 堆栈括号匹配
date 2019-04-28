@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+using namespace std;
+stack<char> sta;
+bool flag=false;
+void print_wrong(char ch,int ind)
+{
+    flag=true;
+    cout<<"The "<<ind<<" character '"<<ch<<"' is wrong."<<endl;
+}
+void print_right()
+{
+    cout<<"right"<<endl;
+}
+void print_loss()
+{
+    cout<<"loss of right character ";
+    while(!sta.empty())
+    {
+        if(sta.top()=='{')
+            cout<<"}";
+        else if(sta.top()=='<')
+            cout<<">";
+        else if(sta.top()=='(')
+            cout<<")";
+        else if(sta.top()=='[')
+            cout<<"]";
+        sta.pop();
+    }
+    cout<<"."<<endl;
+}
+int main()
+{
+    int i=1;
+    while(true)
+    {
+        char ch;
+        scanf("%c",&ch);
+        if(ch=='{')
+            sta.push(ch);
+        else if(ch=='<')
+            sta.push(ch);
+        else if(ch=='(')
+            sta.push(ch);
+        else if(ch=='[')
+            sta.push(ch);
+        else if(ch=='}')
+        {
+            if(sta.empty()||sta.top()!='{')print_wrong(ch,i);
+            else if(sta.top()=='{')sta.pop();
+        }
+        else if(ch=='>')
+        {
+            if(sta.empty()||sta.top()!='<')print_wrong(ch,i);
+            else if(sta.top()=='<')sta.pop();
+        }
+        else if(ch==')')
+        {
+            if(sta.empty()||sta.top()!='(')print_wrong(ch,i);
+            else if(sta.top()=='(')sta.pop();
+        }
+        else if(ch==']')
+        {
+            if(sta.empty()||sta.top()!='[')print_wrong(ch,i);
+            else if(sta.top()=='[')sta.pop();
+        }
+        else if(ch=='#')
+            break;
+    i++;
+    }
+    if(sta.empty()&&!flag)
+    {
+        print_right();
+    }
+    else if(!sta.empty()) print_loss();
+    return 0;
+}
+//输入(){}[]{{[[(())]]}},通过，输入[[[]],缺少，输入：[[}}},错误
