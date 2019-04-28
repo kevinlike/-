@@ -1,0 +1,408 @@
+#include "stdlib.h"
+#include "iostream"
+#include <iomanip>
+#include "math.h"
+using namespace std ;//链表
+
+class List; //前视定义,否则友元无法定义
+class LinkNode
+{
+    friend  List; //链表结点类的定义
+private:
+
+public:
+    LinkNode *link;//节点的下一个地址
+    int data;//节点的数据(系数)
+    int index;//指数
+    LinkNode(const int & item,const int & ind, LinkNode *ptr = NULL)//初始化一个节点，item是数据，ptr是指针指向的下一个地址，默认是最后一个所以是空
+    {
+        data=item;
+        index=ind;
+        link=ptr;
+    }
+    LinkNode (LinkNode *ptr = NULL)
+    {
+        link=ptr;
+    }
+    ~LinkNode() {};
+
+};
+
+class List
+{
+    //单链表类的定义
+private:
+
+public:
+    LinkNode *first; //指向首结点的指针
+    List ()
+    {
+        first = new LinkNode ();   // 带头结点，初始化时使用（一个对象仅使用一次）
+    }
+    ~List ()
+    {
+        MakeEmpty();   //析构函数
+    }
+    void MakeEmpty ( );      //链表置空
+    void input2(int  endTag);//双参数初始化，输入结束标志，读到结束标志前一直增加链表
+    void inser2(int item,int ind);//插入一个新值
+    void output2();//双参数输出
+    void sor();//链表排序
+    int length();//链表长度
+    int getdata(int num);//得到下标为num的值
+};
+void List:: MakeEmpty ( )
+{
+    LinkNode *q;
+    while (  first->link != NULL )
+    {
+        q = first->link;
+        first->link = q->link;
+        delete q;
+    }
+};
+void List :: input2 (int endTag)
+{
+    LinkNode  *newnode;
+    int val;
+    int ind;
+    cin>>val;
+    while(val!=endTag)
+    {
+        cin>>ind;
+        newnode=new LinkNode (val,ind);
+        newnode->link=first->link;//从头部（first）插入
+        first->link=newnode;
+        cin>>val;
+    }
+}
+
+void List :: inser2 (int item,int ind)
+{
+    LinkNode  *newnode;
+    newnode=new LinkNode (item,ind);
+    newnode->link=first->link;//从头部（first）插入
+    first->link=newnode;
+
+}
+void List ::output2()
+{
+    LinkNode *currentNode;
+    currentNode=first->link;
+    int numofoutput=0;
+    cout<<"C(x)=";
+    bool flag=false;
+    while(currentNode!=NULL)
+    {
+        if(currentNode->data!=0)
+        {
+            if(currentNode->data>0&&flag)
+            {
+                cout<<'+';
+            }
+            if(currentNode->index==0)
+            {
+                cout<<currentNode->data;
+            }
+            else if(currentNode->index==1)
+            {
+                if(currentNode->data>1)
+                {
+                    cout<<currentNode->data;
+                }
+                cout<<'x';
+            }
+            else
+            {
+                if(currentNode->data!=1)
+                    cout<<currentNode->data;
+                cout<<"x^"<<currentNode->index;
+            }
+            flag=true;
+            currentNode=currentNode->link;
+        }
+    }
+
+    cout<<endl;
+}
+
+int List::length()
+{
+    LinkNode *currentNode;
+    currentNode=first;
+    int k=0;
+    while(currentNode!=NULL)
+    {
+        currentNode=currentNode->link;
+        k++;
+    }
+    k--;
+    return k;
+}
+
+void val(List &a)
+{
+    float tmp;
+    cin>>tmp;
+    LinkNode *currentNode;
+    currentNode=a.first->link;
+    float sum=0.0;
+    while(currentNode!=NULL)
+    {
+        sum=sum+(float)pow(tmp,currentNode->index)*(float)currentNode->data;
+        currentNode=currentNode->link;
+    }
+    cout<<setiosflags(ios::fixed)<<setprecision(2)<<sum<<endl;
+}
+void add(List &a,List &b,List &c)//没考虑有常数项
+{
+    int indexmax=0;
+    LinkNode *newnode;
+    newnode=a.first;
+    int lena=a.length();
+    int lenb=b.length();
+    int i=0;
+    for(i=0;i<lena;i++)
+    {
+        newnode=newnode->link;
+        if(newnode->index>indexmax)
+        {
+            indexmax=newnode->index;
+        }
+    }
+    newnode=b.first;
+    for(i=0;i<lenb;i++)
+    {
+        newnode=newnode->link;
+        if(newnode->index>indexmax)
+        {
+            indexmax=newnode->index;
+        }
+    }
+    int tmp[indexmax+1];//下标=指数,内容为系数
+    for(i=0;i<indexmax+1;i++)
+    {
+        tmp[i]=0;
+    }
+    newnode=a.first;
+    for(i=0;i<lena;i++)
+    {
+        newnode=newnode->link;
+        tmp[newnode->index]=tmp[newnode->index]+newnode->data;//计算系数
+    }
+    newnode=b.first;
+
+    for(i=0;i<lenb;i++)
+    {
+        newnode=newnode->link;
+        tmp[newnode->index]=tmp[newnode->index]+newnode->data;//加上B的系数
+    }
+    for(i=indexmax;i>=0;i--)
+    {
+        if(tmp[i]!=0)
+        {
+            c.inser2(tmp[i],i);
+        }
+    }
+
+
+}
+void sub(List &a,List &b,List &c)
+{
+    int indexmax=0;
+    LinkNode *newnode;
+    newnode=a.first;
+    int lena=a.length();
+    int lenb=b.length();
+    int i=0;
+    for(i=0;i<lena;i++)
+    {
+        newnode=newnode->link;
+        if(newnode->index>indexmax)
+        {
+            indexmax=newnode->index;
+        }
+    }
+    newnode=b.first;
+    for(i=0;i<lenb;i++)
+    {
+        newnode=newnode->link;
+        if(newnode->index>indexmax)
+        {
+            indexmax=newnode->index;
+        }
+    }
+    int tmp[indexmax+1];//下标=指数,内容为系数
+    for(i=0;i<indexmax+1;i++)
+    {
+        tmp[i]=0;
+    }
+    newnode=a.first;
+    for(i=0;i<lena;i++)
+    {
+        newnode=newnode->link;
+        tmp[newnode->index]=tmp[newnode->index]+newnode->data;//计算系数
+    }
+    newnode=b.first;
+
+    for(i=0;i<lenb;i++)
+    {
+        newnode=newnode->link;
+        tmp[newnode->index]=tmp[newnode->index]-newnode->data;//减去B的系数
+    }
+    for(i=indexmax;i>=0;i--)
+    {
+        if(tmp[i]!=0)
+        {
+            c.inser2(tmp[i],i);
+        }
+    }
+
+}
+void mul(List &a,List &b,List &c)
+{
+    int aindexmax=0,bindexmax=0;
+    int lena=a.length();
+    int lenb=b.length();
+    LinkNode *newnode;
+    newnode=a.first;
+    int i=0;
+    for(i=0;i<lena;i++)
+    {
+        newnode=newnode->link;
+        if(newnode->index>aindexmax)
+        {
+            aindexmax=newnode->index;
+        }
+    }
+    newnode=b.first;
+    for(i=0;i<lenb;i++)
+    {
+        newnode=newnode->link;
+        if(newnode->index>bindexmax)
+        {
+            bindexmax=newnode->index;
+        }
+    }
+    int atmp[aindexmax+1];
+    for(i=0;i<aindexmax+1;i++)
+    {
+        atmp[i]=0;
+    }
+    int btmp[bindexmax+1];
+    for(i=0;i<bindexmax+1;i++)
+    {
+        btmp[i]=0;
+    }
+    int ctmp[aindexmax+bindexmax+1];
+    for(i=0;i<aindexmax+bindexmax+1;i++)
+    {
+        ctmp[i]=0;
+    }
+    newnode=a.first;
+    for(i=0;i<lena;i++)
+    {
+        newnode=newnode->link;
+        atmp[newnode->index]=newnode->data;//提取A的系数
+    }
+    newnode=b.first;
+    for(i=0;i<lenb;i++)
+    {
+        newnode=newnode->link;
+        btmp[newnode->index]=newnode->data;//提取B的系数
+    }
+    for(i=0;i<=aindexmax;i++)
+    {
+        int j=0;
+        for(j=0;j<=bindexmax;j++)
+        {
+            ctmp[i+j]=ctmp[i+j]+atmp[i]*btmp[j];
+        }
+    }
+    for(i=aindexmax+bindexmax;i>=0;i--)
+    {
+        if(ctmp[i]!=0)
+        {
+            c.inser2(ctmp[i],i);
+        }
+    }
+}
+void der(List &a,List &b)//求导
+{
+    int alen=a.length();
+    int i=0;
+    int tmp[2*alen];
+    for(i=0;i<2*alen+1;i++)
+    {
+        tmp[i]=0;
+    }
+    LinkNode *newnode;
+    newnode=a.first;
+    for(i=0;i<alen;i++)//先存系数再存指数
+    {
+        newnode=newnode->link;
+        tmp[i*2]=(newnode->data)*(newnode->index);
+        tmp[i*2+1]=newnode->index-1;
+    }
+    for(i=0;i<alen;i++)
+    {
+        if(tmp[2*i]!=0)
+        {
+            b.inser2(tmp[2*i],tmp[i*2+1]);
+        }
+    }
+}
+
+int main()
+{
+    List A;
+    List B;
+    List C;
+    char ch;
+    int flag=1;
+    do
+    {
+        cin>>ch;
+        if(ch==(int)'P')
+        {
+            add(A,B,C);
+            C.output2();
+        }
+        else if(ch==(int)'S')
+        {
+            sub(A,B,C);
+            C.output2();
+        }
+        else if(ch==(int)'M')
+        {
+            mul(A,B,C);
+            C.output2();
+        }
+        else if(ch==(int)'D')
+        {
+            der(A,C);
+            C.output2();
+        }
+        else if(ch==(int)'V')
+        {
+            val(A);
+        }
+        else if(ch==(int)'C')
+        {
+            A.MakeEmpty();
+            B.MakeEmpty();
+            C.MakeEmpty();
+            A.input2(0); //0为输入的结束数字
+            B.input2(0); //0为输入的结束数字
+        }
+        else if(ch==(int)'X')
+        {
+            flag=0;
+            break;
+        }
+        C.MakeEmpty();
+    }
+    while(flag!=0);
+    return 0;
+}
+//只适用于指数大于零的情况
