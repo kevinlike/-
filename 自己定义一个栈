@@ -1,0 +1,47 @@
+template <class T>
+class Stack{
+public:
+    T *data;
+    int maxsize;
+    int top;
+    Stack(){
+        maxsize=1;
+        data=new T[maxsize];
+        top=-1;
+    }
+    bool empty(){
+        return top==-1;
+    }
+    T gettop(){
+        if(top>-1){
+            return data[top];
+        }
+        return NULL;
+    }
+    void pop(){
+        if(top>=0){
+            top--;
+        }
+    }
+    void expand(){
+        T*tmp=new T[maxsize*2];
+        for(int i=0;i<maxsize;i++){
+            tmp[i]=data[i];
+        }
+        maxsize*=2;
+        delete[] data;
+        data=tmp;
+    }
+    void push(T x){
+        if(top+1==maxsize){
+            expand();
+        }
+        data[++top]=x;
+    }
+    ~Stack(){
+        delete[] data;
+    }
+};
+/*使用时：Stack<char> operators;
+    Stack<double> operands;
+    与系统自带栈使用方法一致，只是定义时名字首字母大写了*/
