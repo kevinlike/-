@@ -1,0 +1,270 @@
+#include <iostream>
+using namespace std;
+template<class T>
+class QueueNode{
+public:
+    T data;
+    QueueNode*link=NULL;
+    QueueNode(){
+        ;
+    }
+    QueueNode(T data){
+        this->data=data;
+    }
+};
+template<class T>
+class Queue{
+private:
+    QueueNode<T>*tail=NULL;
+    QueueNode<T>*head=NULL;
+public:
+    bool isEmpty(){
+        return head==NULL;
+    }
+    ~Queue(){
+        while(head!=NULL){
+            QueueNode<T>*p=head->link;
+            delete head;
+            head=p;
+        }
+    }
+    void enQueue(T data){
+        if(tail==NULL){
+            head=tail=new QueueNode<T>(data);
+            return;
+        }
+        tail->link=new QueueNode<T>(data);
+        tail=tail->link;
+    }
+    T deQueue(){
+        if(isEmpty()){
+            return NULL;
+        }
+        T res=head->data;
+        QueueNode<T>*tmp=head;
+        head=head->link;
+        delete tmp;
+        if(head==NULL){
+            tail=NULL;
+        }
+        return res;
+    }
+};
+class Tree;
+class Node{
+friend class Tree;
+private:
+    char data='\0';
+    Node*lChild=NULL;
+    Node*rChild=NULL;
+public:
+    Node(){
+        ;
+    }
+    Node(char data){
+        this->data=data;
+    }
+};
+class Tree{
+private:
+    Node*root=NULL;
+    void createTree(Node*&p,string&str,int&id){
+        if(id>=str.size()){
+            return;
+        }
+        if(str.at(id)=='#'){
+            id++;
+            return;
+        }
+        p=new Node();
+        p->data=str.at(id);
+        id++;
+        createTree(p->lChild,str,id);
+        createTree(p->rChild,str,id);
+    }
+    size_t getHeight(Node*p){
+        size_t lHeight;
+        size_t rHeight;
+        if(p->lChild==NULL){
+            lHeight=0;
+        }else{
+            lHeight=getHeight(p->lChild);
+        }
+        if(p->rChild==NULL){
+            rHeight=0;
+        }else{
+            rHeight=getHeight(p->rChild);
+        }
+        return max(lHeight,rHeight)+1;
+    }
+    size_t getLeaves(Node*p){
+        if(p==NULL){
+            return 0;
+        }
+        size_t res=0;
+        if(p->lChild==NULL&&p->rChild==NULL){
+            res++;
+        }
+        res+=getLeaves(p->lChild);
+        res+=getLeaves(p->rChild);
+        return res;
+    }
+    size_t getNodes(Node*p){
+        if(p==NULL){
+            return 0;
+        }
+        return getNodes(p->lChild)+getNodes(p->rChild)+1;
+    }
+    void visit1(Node*p){
+        if(p==NULL){
+            return;
+        }
+        cout<<p->data<<' ';
+        visit1(p->lChild);
+        visit1(p->rChild);
+    }
+    void visit2(Node*p){
+        if(p==NULL){
+            return;
+        }
+        visit2(p->lChild);
+        cout<<p->data<<' ';
+        visit2(p->rChild);
+    }
+    void visit3(Node*p){
+        if(p==NULL){
+            return;
+        }
+        visit3(p->lChild);
+        visit3(p->rChild);
+        cout<<p->data<<' ';
+    }
+    void delNode(Node*p){
+        if(p==NULL){
+            return;
+        }
+        delNode(p->lChild);
+        delNode(p->rChild);
+        delete p;
+    }
+    int search(char c,Node*p){
+        if(p==NULL){
+            return 0;
+        }
+        int res=p->data==c?1:0;
+        return search(c,p->lChild)+search(c,p->rChild)+res;
+    }
+    void indexTree(Node*p,int depth){
+        if(p==NULL){
+            return;
+        }
+        for(int i=0;i<depth;i++){
+            cout<<' '<<' ';
+        }
+        cout<<p->data<<endl;
+        indexTree(p->lChild,depth+1);
+        indexTree(p->rChild,depth+1);
+    }
+public:
+    Tree(string str){
+        int id=0;
+        createTree(root,str,id);
+    }
+    size_t getHeight(){
+        return getHeight(root);
+    }
+    size_t getLeaves(){
+        return getLeaves(root);
+    }
+    size_t getNodes(){
+        return getNodes(root);
+    }
+    void visit1(){
+        cout<<"Preorder is:";
+        visit1(root);
+        cout<<'.'<<endl;
+    }
+    void visit2(){
+        cout<<"Inorder is:";
+        visit2(root);
+        cout<<'.'<<endl;
+    }
+    void visit3(){
+        cout<<"Postorder is:";
+        visit3(root);
+        cout<<'.'<<endl;
+    }
+    void visitBFS(){
+        Queue<Node*>*q=new Queue<Node*>();
+        q->enQueue(root);
+        while(!q->isEmpty()){
+            Node*tmp=q->deQueue();
+            cout<<tmp->data<<' ';
+            if(tmp->lChild!=NULL){
+                q->enQueue(tmp->lChild);
+            }
+            if(tmp->rChild!=NULL){
+                q->enQueue(tmp->rChild);
+            }
+        }
+        delete q;
+    }
+    int search(char c){
+        return search(c,root);
+    }
+    void indexTree(){
+        indexTree(root,0);
+    }
+    ~Tree(){
+        delNode(root);
+    }
+};
+int main()
+{
+    char Op;
+    Tree*tree;
+    while(cin>>Op){
+        string str;
+        switch(Op){
+        case 'C':
+            cin>>str;
+            tree=new Tree(str);
+            cout<<"Created success!"<<endl;
+            break;
+        case 'H':
+            cout<<"Height="<<tree->getHeight()<<'.'<<endl;
+            break;
+        case 'L':
+            cout<<"Leaf="<<tree->getLeaves()<<'.'<<endl;
+            break;
+        case 'N':
+            cout<<"Nodes="<<tree->getNodes()<<'.'<<endl;
+            break;
+        case '1':
+            tree->visit1();
+            break;
+        case '2':
+            tree->visit2();
+            break;
+        case '3':
+            tree->visit3();
+            break;
+        case '4':
+            cout<<"BFSorder is:";
+            tree->visitBFS();
+            cout<<'.'<<endl;
+            break;
+        case 'F':
+            char x;
+            cin>>x;
+            cout<<"The count of "<<x<<" is "<<tree->search(x)<<'.'<<endl;
+            break;
+        case 'P':
+            cout<<"The tree is:"<<endl;
+            tree->indexTree();
+            break;
+        }
+    }
+    delete tree;
+    return 0;
+}
