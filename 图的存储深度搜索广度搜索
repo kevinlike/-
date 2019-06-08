@@ -1,0 +1,202 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int DefaultVertices=30;//默认最大节点数
+const int maxWeight=100;  //最大权值相当于无穷大
+class Graphmtx
+{
+public:
+    int maxVertices;//图中最大顶点数
+    int numEdges;//当前已有的边数
+    int numVertices;//当前已有的顶点数
+    char *VerticesList;//顶点表，用来存储当前已有顶点
+    int **Edge;//邻接矩阵，用来存储当前已有的边关系（权值）
+    Graphmtx(int sz=DefaultVertices);
+    ~Graphmtx()
+    {
+        delete[]VerticesList;
+        delete[]Edge;
+    }
+    bool insertVertex(char &vertex)   //插入顶点
+    {
+        if (numVertices==maxVertices)//判断是否已达最大顶点数
+        {
+            return false;
+        }
+        VerticesList[numVertices++]=vertex;//插入顶点
+        return true;
+    }
+    bool inserEdge(int v1,int v2,int cost)   //插入边的权值
+    {
+        if(v1>-1&&v1<numVertices&&v2>-1&&v2<numVertices&&Edge[v1][v2]==maxWeight)
+        {
+            Edge[v1][v2]=Edge[v2][v1]=cost;
+            numEdges++;
+            return true;
+        }
+        else return false;
+    }
+    void output()
+    {
+        int i=0,j=0;
+        if(numEdges==0)
+        {
+            return;
+        }
+        for(i=0;i<numVertices;i++)
+        {
+
+
+            for(j=i+1; j<numVertices; j++)
+            {
+                if(Edge[i][j]!=100)
+                {
+                    cout<<VerticesList[i]<<'-'<<VerticesList[j]<<':'<<Edge[i][j]<<endl;
+                }
+            }
+        }
+    }
+    int getFirstNeighbor(int v)
+    {
+        if(v!=-1)
+        {
+            int col=0;
+            for(col=0;col<numVertices;col++)
+            {
+                if(Edge[v][col]>0&&Edge[v][col]<maxWeight)
+                {
+                    return col;
+                }
+            }
+        }
+            return -1;
+    }
+    int getNextNeighbor(int v,int w)
+    {
+        if(v!=-1&&w!=-1)
+        {
+            for(int col=w+1;col<numVertices;col++)
+            {
+                if(Edge[v][col]>0&&Edge[v][col]<maxWeight)
+                    return col;
+            }
+        }
+            return -1;
+    }
+    void DFS(Graphmtx &g,int v)
+    {
+        int n=numVertices;
+        bool *visited=new bool[n];
+        int i=0;
+        for(i=0;i<n;i++)
+        {
+            visited[i]=false;
+        }
+        DFS(g,v,visited);
+        delete[]visited;
+    }
+    void DFS(Graphmtx &g,int v,bool visited[])
+    {
+
+        cout<<VerticesList[v]<<' ';
+        visited[v]=true;
+        int w=g.getFirstNeighbor(v);
+        while(w!=-1)
+        {
+            if(visited[w]==false)
+                DFS(g,w,visited);
+            w=g.getNextNeighbor(v,w);
+            int i=0;
+            for(i=0; i<numVertices; i++)
+            {
+                if(visited[i]==false)
+                    break;
+            }
+            if(i==numVertices)
+                return;
+        }
+    }
+    void BFS(int v)
+    {
+        int w,n=numVertices;
+        int i=0;
+        bool *visited=new bool[n];
+        for(i=0;i<n;i++)
+        {
+            visited[i]=false;
+        }
+        cout<<VerticesList[v]<<' ';
+        visited[v]=true;
+        queue<int>q;
+        q.push(v);
+        while(!q.empty())
+        {
+            v=q.front();
+            q.pop();
+            w=getFirstNeighbor(v);
+            while(w!=-1)
+            {
+                if(visited[w]==false)
+                {
+                    cout<<VerticesList[w]<<' ';
+                    visited[w]=true;
+                    q.push(w);
+                }
+                w=getNextNeighbor(v,w);
+            }
+        }
+        delete[]visited;
+    }
+};
+Graphmtx::Graphmtx(int sz)
+{
+    maxVertices=sz;//初始化最大顶点数
+    numVertices=0;//当前顶点数为0
+    numEdges=0;//当前边数为0
+    int i=0;
+    int j=0;
+    VerticesList=new char[maxVertices];//开辟顶点空间
+    Edge=(int **)new int *[maxVertices];//开辟邻接矩阵空间
+    for(i=0;i<maxVertices;i++)//初始化顶点
+    {
+        Edge[i]=new int[maxVertices];
+    }
+    for(i=0;i<maxVertices;i++)//初始化邻接矩阵
+    {
+        for(j=0;j<maxVertices;j++)
+        {
+            Edge[i][j]=(i==j)?0:maxWeight;  //初始化时自身距离为0，其他都为最大（无穷）
+        }
+    }
+}
+
+int main()
+{
+    Graphmtx g(10);
+    int i=0;
+    int n,m;
+    cin>>n;//节点数
+    for(i=0;i<n;i++)
+    {
+        char temp;
+        cin>>temp;
+        g.insertVertex(temp);
+    }
+    cin>>m;//边数
+    for(i=0;i<m;i++)
+    {
+        int temp1,temp2,temp3;
+        cin>>temp1>>temp2>>temp3;
+        g.inserEdge(temp1,temp2,temp3);
+    }
+    cout<<"DFS:";
+    g.DFS(g,0);
+    cout<<endl;
+    cout<<"BFS:";
+    g.BFS(0);
+    cout<<endl;
+    cout<<"edges are:"<<endl;
+    g.output();
+    return 0;
+}
+//no known conversion for argument 1 from 'Graphmtx*' to 'int'|
