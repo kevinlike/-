@@ -1,0 +1,126 @@
+#include<bits/stdc++.h>
+using namespace std;
+class bintree;
+class binnode
+{
+    friend class bintree;
+private:
+    binnode *leftchild,*rightchild;
+    char data;
+public:
+    binnode(binnode *left=NULL,binnode *right=NULL)
+    {
+        leftchild=left;
+        rightchild=right;
+    }
+    binnode(char a,binnode *left=NULL,binnode *right=NULL )
+    {
+        data=a;
+        cout<<"check"<<data<<endl;
+        leftchild=left;
+        rightchild=right;
+    }
+};
+class bintree
+{
+private:
+    binnode *root;
+    char stopsign;
+    void create(binnode * &subtree)
+    {
+        char a;
+        cin>>a;
+        if(a!=stopsign)
+        {
+            subtree=new binnode(a);
+            create(subtree->leftchild);
+            create(subtree->rightchild);
+        }
+        else
+            subtree=NULL;
+    }
+    void inorder(binnode *subtree)
+    {
+        if(subtree!=NULL)
+        {
+            inorder(subtree->leftchild);
+            cout<<subtree->data;
+            inorder(subtree->rightchild);
+        }
+    }
+
+public:
+    bintree(binnode *ptr=NULL)
+    {
+        root=ptr;
+    }
+    bintree(char stop,binnode *ptr=NULL)
+    {
+        stopsign=stop;
+        root=ptr;
+    }
+    void create()
+    {
+        create(root);
+    }
+    binnode *parent(binnode *subtree,binnode *current)
+    {
+        if(subtree==NULL)
+        {
+            return NULL;
+        }
+        if(subtree->leftchild==current||subtree->rightchild==current)
+        {
+            return subtree;
+        }
+        binnode *p;
+        if((p=parent(subtree->leftchild,current))!=NULL)
+        {
+            return p;
+        }
+        else
+        {
+            return p=parent(subtree->rightchild,current);
+        }
+    }
+    void inorder()
+    {
+        inorder(root);
+        cout<<"ok";
+    }
+    binnode *get()
+    {
+        return root;
+    }
+    void levelorder()
+    {
+        if(root==NULL)
+        {
+            return;
+        }
+        queue <binnode *> Q;
+        Q.push(root);
+        binnode *p;
+        while(!Q.empty())
+        {
+            p=Q.front();
+            Q.pop();
+            cout<<p->data;
+            if(p->leftchild!=NULL)
+            {
+                Q.push(p->leftchild);
+            }
+            if(p->rightchild!=NULL)
+            {
+                Q.push(p->rightchild);
+            }
+        }
+    }
+};
+int main()
+{
+    bintree b('0');
+    b.create();
+    b.levelorder();
+    return 0;
+}
